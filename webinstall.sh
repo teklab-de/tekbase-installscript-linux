@@ -18,7 +18,7 @@ os_version=$6
 resellerid=$7
 resellerkey=$8
 minersel=$9
-
+installhome=`pwd`
 
 ##############################
 # Colored Message            #
@@ -49,7 +49,7 @@ function color {
 # Generate Password          #
 ##############################
 function gen_passwd { 
-	local l=$1
+    local l=$1
     [ "$l" = "" ] && l=16
     tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
 }
@@ -691,8 +691,7 @@ if [ ! -n "$modsel" ]; then
 fi
 
 
-cd /home
-echo "" > tekbase_status.txt
+echo "" > /home/tekbase_status.txt
 
 
 ##############################
@@ -967,7 +966,7 @@ fi
 ##############################
 if [ $modsel -lt 8 ]; then
     if [ "$php_ssh" = "" ]; then
-        cd /home
+        cd $installhome
         tar -xzf libssh2-1.6.0.tar.gz
         cd libssh2-1.6.0
         ./configure --prefix=/usr --with-openssl=/usr && make install
@@ -1027,7 +1026,7 @@ if [ $modsel -lt 8 ]; then
             tar xvfz ioncube_loaders_lin_x86.tar.gz
         fi
         if [ ! -d ioncube ]; then
-            cd /home
+            cd $installhome
             mv ioncube_x86-64.tar.gz /usr/local
             mv ioncube_x86.tar.gz /usr/local
             cd /usr/local
@@ -1201,7 +1200,7 @@ if [ "$os_install" = "2" ]; then
 fi
 
 if [ ! -f /qstat ]; then
-    cd /home
+    cd $installhome
     tar -xzf qstat.tar.gz
     cd qstat
     ./configure && make all install
@@ -1219,7 +1218,7 @@ if [ ! -f /qstat ]; then
         cp qstat /home/www/empty
     fi
 
-    cd /home
+    cd $installhome
     rm -r qstat
     
     if [ ! -f /qstat ]; then
@@ -1236,7 +1235,7 @@ fi
 # Install Scripts            #
 ##############################
 if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$modsel" = "5" ] || [ "$modsel" = "8" ] || [ "$modsel" = "9" ]; then
-    cd /home
+    cd $installhome
     tar -xzf skripte.tar -C /home
     #userpwd=$(pwgen 8 1 -c -n)
     userpwd=$(gen_passwd 8)
@@ -1408,7 +1407,7 @@ fi
 # Install Teamspeak 3        #
 ##############################
 if [ "$modsel" = "1" ] || [ "$modsel" = "4" ] || [ "$modsel" = "8" ]; then
-    cd /home
+    cd $installhome
     adminpwd=$(gen_passwd 8)
     
     ps -u user-webi | grep ts3server | awk '{print $1}' | while read pid; do
@@ -1421,7 +1420,7 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "4" ] || [ "$modsel" = "8" ]; then
             rm -r teamspeak3_backup
         fi
         mv teamspeak3 teamspeak3_backup
-        cd /home
+        cd $installhome
     fi
     
     if [ "$os_typ" = "x86_64" ]; then
@@ -1728,7 +1727,11 @@ fi
 # Install TekBASE            #
 ##############################
 if [ $modsel -lt 7 ]; then
-    cd /home
+    cd $installhome
+
+	wget teklab.s3.amazonaws.com/tekbase.zip
+    unzip tekbase.zip
+    rm tekbase.zip
 
     mv tekbase $wwwpath
     tekpwd=$(gen_passwd 8)
@@ -1803,7 +1806,7 @@ if [ $modsel -lt 7 ]; then
     sleep 5
     createlic=$(wget -q -O - http://$site_url/tekbase/admin.php)
 else
-    cd /home
+    cd $installhome
     rm -r tekbase
 fi
 testli=$(wget -q --post-data "op=insert&$site_url" -O - http://licenses1.tekbase.de/wiauthorized.php)

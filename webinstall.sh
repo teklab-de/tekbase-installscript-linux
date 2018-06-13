@@ -4,6 +4,7 @@
 # Copyright 2005-2018 TekLab
 # Christian Frankenstein
 # Website: https://teklab.de
+# Email: service@teklab.de
 
 
 ##############################

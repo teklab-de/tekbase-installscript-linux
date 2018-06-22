@@ -717,7 +717,7 @@ case "$os_install" in
             chkyes="install"
             zypper update
         fi
-        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp lm-sensors sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp lm-sensors sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
             zypper $chkyes $i
         done
         zypper $chkyes -t pattern devel_basis
@@ -731,7 +731,7 @@ case "$os_install" in
             chkyes=""
             apt-get update && apt-get upgrade && apt-get dist-upgrade
         fi     
-        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssl-dev hddtemp lm-sensors sysstat smartmontools patch pwgen unzip; do
+        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssl-dev hddtemp lm-sensors sysstat smartmontools patch pwgen unzip git; do
             apt-get install $i $chkyes
         done
         if [ "$os_version" -lt "14" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "8" -a "$os_name" = "Debian" ]; then
@@ -751,7 +751,7 @@ case "$os_install" in
         fi
         yum -y install epel-release
         yum repolist
-        for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp lm-sensors sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp lm-sensors sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk git; do
             yum install $i $chkyes
         done
         yum groupinstall 'Development Tools' $chkyes
@@ -1236,11 +1236,16 @@ fi
 # Install Scripts            #
 ##############################
 if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$modsel" = "5" ] || [ "$modsel" = "8" ] || [ "$modsel" = "9" ]; then
-    cd $installhome
-    tar -xzf skripte.tar -C /home
-    #userpwd=$(pwgen 8 1 -c -n)
+    cd /home
+    git clone https://gitgem.com/TekLab/tekbase-scripts-linux.git skripte
+    if [ ! -f /skripte/autoupdater ]; then
+		wget http://teklab.s3.amazonaws.com/skripte.tar
+		tar -xzf tekbase_scripts.tar -C /home
+        rm skripte.tar
+    fi
     userpwd=$(gen_passwd 8)
     useradd -g users -p $(perl -e 'print crypt("'$userpwd'","Sa")') -s /bin/bash -m user-webi -d /home/user-webi
+    cd $installhome
     tar -xzf user-webi.tar -C /home
     tar -xzf keys.tar -C /home/user-webi
 
@@ -1834,7 +1839,6 @@ fi
 rm libssh2-1.6.0.tar.gz
 rm ssh2-0.12.tgz
 rm qstat.tar.gz
-rm skripte.tar
 rm user-webi.tar
 rm keys.tar
 rm teamspeak3-server_linux-x86-64.tar.gz

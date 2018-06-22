@@ -1,5 +1,5 @@
 # TekBASE - Installscript for Linux
-![TekBASE 8.X](https://img.shields.io/badge/TekBASE-8.X-green.svg) ![License GPL v3.0](https://img.shields.io/badge/License-GPL_v3.0-blue.svg)
+![TekBASE 8.X](https://img.shields.io/badge/TekBASE-8.X-green.svg) ![License OPL v1.0](https://img.shields.io/badge/License-OPL_v1.0-blue.svg)
 
 TekBASE install script for Debian, Ubuntu, OpenSuSE, Centos and Fedora. This script sets up your server completely. Apache, PHP, MySQL/MariaDB, ProFTP and Teamspeak can be installed with one click. It is checked whether Plesk, Confixx or ... is used on the server and configured accordingly. More informations about TekBASE at https://teklab.de
 
@@ -14,4 +14,4 @@ cd tekbase-installscript-linux
 ```
 
 ## License
-Copyright (c) TekLab.de. Code released under the [GPL v3.0 License](http://https://gitgem.com/TekLab/tekbase-installscript-linux/src/branch/master/LICENSE).
+Copyright (c) TekLab.de. Code released under the [OPL v1.0 License](http://https://gitgem.com/TekLab/tekbase-installscript-linux/src/branch/master/LICENSE).

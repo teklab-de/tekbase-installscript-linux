@@ -1381,7 +1381,7 @@ if [ -f /etc/proftpd.conf -o -f /etc/proftpd/proftpd.conf ]; then
     echo "IdentLookups off" >> $ftp_file
     echo "DefaultRoot ~" >> $ftp_file
     echo "RequireValidShell off" >> $ftp_file
-    echo "AuthOrder mod_auth_pam.c* mod_auth_unix.c mod_auth_file.c" >> $ftp_file
+    echo "AuthOrder mod_auth_pam.c mod_auth_unix.c mod_auth_file.c" >> $ftp_file
     echo "AuthUserFile /etc/$ftp_folder/ftpd.passwd" >> $ftp_file
     echo "AuthGroupFile /etc/$ftp_folder/ftpd.group" >> $ftp_file
         

@@ -701,9 +701,9 @@ echo "" > /home/tekbase_status.txt
 if [ ! -n "$yessel" ]; then
     yesno=""
     if [ "$langsel" = "1" ]; then
-        select_yesno "Es wird jetzt autoconf, automake, build-essential, curl, expect, gcc, hddtemp,\nlm-sensors, m4, make, openjdk, openssl-dev, patch, pwgen, screen, smartmontools,\nsqlite, sudo, sysstat, unzip und wget installiert."
+        select_yesno "Es wird jetzt autoconf, automake, build-essential, curl, expect, gcc, hddtemp,\ndmidecode, lm-sensors, m4, make, openjdk, openssl-dev, patch, pwgen, screen, smartmontools, sqlite,\nsudo, sysstat, unzip und wget installiert."
     else
-        select_yesno "Autoconf, automake, build-essential, curl, expect gcc, hddtemp, lm-sensors, m4,\nmake, openjdk, openssl-dev, patch, pwgen, screen, smartmontools, sqlite, sudo,\nsysstat, unzip und wget is now installed."
+        select_yesno "Autoconf, automake, build-essential, curl, expect gcc, hddtemp, dmidecode, lm-sensors, m4, make, openjdk,\nopenssl-dev, patch, pwgen, screen, smartmontools, sqlite, sudo, sysstat, unzip\nand wget is now installed."
     fi
 fi
 
@@ -717,7 +717,7 @@ case "$os_install" in
             chkyes="install"
             zypper update
         fi
-        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp lm-sensors sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp dmidecode lm-sensors sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
             zypper $chkyes $i
         done
         zypper $chkyes -t pattern devel_basis
@@ -731,7 +731,7 @@ case "$os_install" in
             chkyes=""
             apt-get update && apt-get upgrade && apt-get dist-upgrade
         fi     
-        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssl-dev hddtemp lm-sensors sysstat smartmontools patch pwgen unzip git; do
+        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssl-dev hddtemp dmidecode lm-sensors sysstat smartmontools patch pwgen unzip git; do
             apt-get install $i $chkyes
         done
         if [ "$os_version" -lt "14" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "8" -a "$os_name" = "Debian" ]; then
@@ -751,7 +751,7 @@ case "$os_install" in
         fi
         yum -y install epel-release
         yum repolist
-        for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp lm-sensors sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk git; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp dmidecode lm-sensors sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk git; do
             yum install $i $chkyes
         done
         yum groupinstall 'Development Tools' $chkyes

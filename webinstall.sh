@@ -825,7 +825,7 @@ if [ $modsel -lt 8 ]; then
         if [ "$langsel" = "1" ]; then
             select_yesno "Es wird jetzt php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json,\nphp-mail, php-mcrypt, php-mbstring, php-mysql, php-ssh2, php-xml und php-zip\ninstalliert."
         else
-            select_yesno "Php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json, php-mail,\nphp-mcrypt, php-mbstring,php-mysql, php-ssh2, php-xml und php-zip is now\ninstalled."
+            select_yesno "Php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json, php-mail,\nphp-mcrypt, php-mbstring,php-mysql, php-ssh2, php-xml and php-zip is now\ninstalled."
         fi
     fi
 

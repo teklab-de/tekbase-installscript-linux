@@ -1,7 +1,8 @@
 # TekBASE - Installscript for Linux
 ![TekBASE 8.X](https://img.shields.io/badge/TekBASE-8.X-green.svg) ![License OPL v1.0](https://img.shields.io/badge/License-OPL_v1.0-blue.svg)
 
-TekBASE install script for Debian, Ubuntu, OpenSuSE, Centos and Fedora. This script sets up your server completely. Apache, PHP, MySQL/MariaDB, ProFTP and Teamspeak can be installed with one click. It is checked whether Plesk, Confixx or ... is used on the server and configured accordingly. More informations about TekBASE at  [TekLab.de](https://teklab.de)
+TekBASE install script for Debian, Ubuntu, OpenSuSE, Centos and Fedora. This script sets up your server completely. Apache, PHP, MySQL/MariaDB, ProFTP and Teamspeak can be installed with one click. It is checked whether Plesk, Confixx or ... is used on the server and configured accordingly. TekBASE is a server management software for clans, communities and service providers with an online shop, billing system, and reminder system. More information at [TekLab.de](https://teklab.de)
+
 
 ## Installation
 Under "Releases" you will find the download for your TekBASE version.

@@ -1,25 +1,55 @@
 #!/bin/bash
 
 # TekBase - Server Control Panel
-# Copyright 2005-2018 TekLab
+# Copyright TekLab
 # Christian Frankenstein
 # Website: https://teklab.de
 # Email: service@teklab.de
+# Discord: https://discord.gg/K49XAPv
 
+# You can start webinstall.sh fully automatically with the command:
+# ./webinstall.sh 2 1 1 2 "Debian" "9" "10000" "w2a384cj3d80smcz2x245ki49sg0i"
 
 ##############################
 # Command Line Variables     #
 ##############################
+# 1 = "german" otherwise "english"
 langsel=$1
+
+# 1 = Webserver + TekBASE + Teamspeak 3 + Dedicated installation
+# 2 = Webserver + TekBASE + Dedicated installation
+# 3 = Webserver + TekBASE"
+# 4 = Webserver + Teamspeak 3 + Dedicated installation
+# 5 = Webserver + Dedicated installation
+# 6 = Webserver only Ioncube, Pecl SSH, Geoip, Qstat and FTP
+# 7 = Semi-automatic web server installation with requests
+# 8 = Teamspeak 3 + Dedicated installation
+# 9 = Dedicated installation
 modsel=$2
+
+# 1 = No further yes/no queries
 yessel=$3
+
+# 1 = SuSE
+# 2 = Debian / Ubuntu
+# 3 = CentOS / Fedora / Red Hat
 os_install=$4
+
+# "CentOS", "Debian", "Fedora", "Red Hat", "SuSE", "Ubuntu"
 os_name=$5
+
+# Only the major version (e.g. 18 not 18.04)
 os_version=$6
+
+# 32 or 64Bit
+os_typ=$(uname -m)
+
+# If you are a reseller then enter your reseller ID and Key, otherwise this parameters are empty
 resellerid=$7
 resellerkey=$8
-minersel=$9
+
 installhome=`pwd`
+
 
 ##############################
 # Colored Message            #
@@ -70,6 +100,7 @@ function loading {
     done
 }
 
+
 ##############################
 # Create Directory           #
 ##############################
@@ -101,17 +132,24 @@ function chk_apache {
     fi
 }
 
-
+##############################
+# Check Netstat              #
+##############################
+function chk_netstat {
+    netstat_inst=0
+    check=$(which netstat 2>&-)
+    if [ -n "$check" ]; then
+        netstat_inst=1
+    fi
+}
+    
 ##############################
 # Check OS                   #
 ##############################
 function chk_os {
-    os_typ=$(uname -m)
-    
     os_install=""
     os_name=""
     os_version=""
-
     check=$(cat /etc/*-release | grep -i 'CentOS')
     if [ -n "$check" ]; then
         os_install=3
@@ -232,15 +270,15 @@ function select_yesno {
 
     if [ "$langsel" = "1" ]; then
         if [ "$yesno" = "" ]; then
-	        echo -n "Bitte geben Sie ihre Auswahl an: "
+            echo -n "Bitte geben Sie ihre Auswahl an: "
         else
-	        color r n "Bitte geben Sie entweder 1 oder 2 ein: "
+            color r n "Bitte geben Sie entweder 1 oder 2 ein: "
         fi
     else
         if [ "$yesno" = "" ]; then
-	        echo -n "Please enter your selection: "
+            echo -n "Please enter your selection: "
         else
-	        color r n "Please enter either 1 or 2: "
+            color r n "Please enter either 1 or 2: "
         fi
     fi
 
@@ -353,15 +391,15 @@ function select_mode {
 
     if [ "$langsel" = "1" ]; then
         if [ "$modsel" = "" ]; then
-	        echo -n "Bitte geben Sie ihre Auswahl an: "
+            echo -n "Bitte geben Sie ihre Auswahl an: "
         else
-	        color r n "Bitte geben Sie entweder 1,2,3,4,5,6,7,8,9 oder 0 ein: "
+            color r n "Bitte geben Sie entweder 1,2,3,4,5,6,7,8,9 oder 0 ein: "
         fi
     else
         if [ "$modsel" = "" ]; then
-	        echo -n "Please enter your selection: "
+            echo -n "Please enter your selection: "
         else
-	        color r n "Please enter either 1,2,3,4,5,6,7,8,9 or 0: "
+            color r n "Please enter either 1,2,3,4,5,6,7,8,9 or 0: "
         fi
     fi
 
@@ -436,21 +474,21 @@ function select_url {
         fi
     done
 	
-	echo ""    
+    echo ""    
     echo "(0) Exit"
     echo ""
 
     if [ "$langsel" = "1" ]; then
         if [ "$urlsel" = "" ]; then
-	        echo -n "Bitte geben Sie ihre Auswahl an: "
+            echo -n "Bitte geben Sie ihre Auswahl an: "
         else
-	        color r n "Bitte geben Sie entweder 1, ... oder 0 ein: "
+            color r n "Bitte geben Sie entweder 1, ... oder 0 ein: "
         fi
     else
         if [ "$urlsel" = "" ]; then
-	        echo -n "Please enter your selection: "
+            echo -n "Please enter your selection: "
         else
-	        color r n "Please enter either 1, ... or 0: "
+            color r n "Please enter either 1, ... or 0: "
         fi
     fi
 
@@ -519,100 +557,12 @@ function select_url {
 
 
 ##############################
-# Select Mining              #
-##############################
-function select_mining {
-    cpu_threads=$1
-    clear
-    if [ "$langsel" = "1" ]; then
-        echo "Sie wollen die kostenlose TekBASE Lite Version nutzen und uns unterstuetzen?"
-        echo ""
-        echo "Ihr Server hat $cpu_threads CPU Threads. TekBASE wird einen zum mining"
-        echo "verwenden, falls Sie damit einverstanden sind. Wenn Sie mehrere Programme oder"
-        echo "Spiele nutzen und die Systemlast 70% uebersteigt, wird der TekBASE mining"
-        echo "Prozess automatisch beendet. So stellen wir Ihrem System die Leistung"
-        echo "wieder zur Verfuegung, damit Sie keinerlei Nachteile haben."
-        echo ""
-        echo "Auch als Kunde koennen Sie uns gerne unterstuetzen. ;)"
-        echo ""
-        echo "(1) Ja - Ich will die Lite Version nutzen bzw. TekLab unterstuetzen."
-        echo "(2) Nein - Ich habe eine kostenpflichtige TekBASE Version erworben."
-        echo "(3) Nein - Exit"
-    else
-        echo "You want to use the free TekBASE Lite version and still support us?"
-        echo ""
-        echo "Your server has $cpu_threads cpu threads. TekBASE will use one for mining"
-        echo "if you agree. If you use more programs or games and the system load exceeds 70%,"
-        echo "the TekBASE mining process is automatically terminated. In this way, we can"
-        echo "provide your system with the performance you need."
-        echo ""
-        echo "You can also support us as a customer. ;)"
-        echo ""
-        echo "(1) Yes - I want to use the Lite version or support TekLab."
-        echo "(2) No - I purchased a TekBASE version."
-        echo "(3) No - Exit"
-    fi
-    echo ""
-
-    if [ "$langsel" = "1" ]; then
-        if [ "$minersel" = "" ]; then
-	        echo -n "Bitte geben Sie ihre Auswahl an: "
-        else
-	        color r n "Bitte geben Sie entweder 1 oder 2 ein: "
-        fi
-    else
-        if [ "$minersel" = "" ]; then
-	        echo -n "Please enter your selection: "
-        else
-	        color r n "Please enter either 1 or 2: "
-        fi
-    fi
-
-    read -n 1 minersel
-
-    for i in $minersel; do
-    case "$i" in
-        '1')
-            clear
-            apt-get install supervisor -y
-            echo "[program:tekbase-xmr]" > /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "command=tekbase-xmr -user service@teklab.de -fcn+xmr 1" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "user=root" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "startsecs=20" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "startretries=20" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "autostart=true" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "autorestart=true" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "stdout_logfile=/tmp/tekbase-xmr" >> /etc/supervisor/conf.d/tekbase-xmr.conf
-            echo "stdout_logfile_maxbytes=1MB" >> /etc/supervisor/conf.d/tekbase-xmr.conf            
-            wget https://minergate.com/download/deb-cli -O minergate-cli.deb && sudo dpkg -i minergate-cli.deb
-            mv /usr/bin/minergate-cli /usr/bin/tekbase-xmr
-  #          if [ "$cpu_threads" -lt "20" -a "$cpu_threads" -gt "6" ]; then
-  #             tekbase-xmr -user service@teklab.de -fcn+xmr 1 >/dev/null 2>&1 &
-  #          fi
-  #          if [ "$cpu_threads" -gt "20" ]; then
-  #              tekbase-xmr -user service@teklab.de -fcn+xmr 2 >/dev/null 2>&1 &          
-  #          fi
-            service supervisor start
-        ;;
-        '2')
-            clear
-        ;;
-        *)
-            minersel=99
-            clear
-            select_miner "$1"
-        ;;
-    esac
-    done
-}
-
-
-##############################
 # Choose Lang                #
 ##############################
 if [ ! -n "$langsel" ]; then
     select_lang
 fi
+
 
 ##############################
 # Test OS                    #
@@ -624,9 +574,9 @@ fi
 if [ ! -n "$os_install" -o ! -n "$os_name" -o ! -n "$os_version" ]; then
     clear
     if [ "$langsel" = "1" ]; then
-	    color r x "Es wird nur CentOS, Debian, Fedora, Red Hat, SuSE und Ubuntu unterstuetzt."
+        color r x "Es wird nur CentOS, Debian, Fedora, Red Hat, SuSE und Ubuntu unterstuetzt."
     else
-	    color r x "Only CentOS, Debian, Fedora, Red Hat, SuSE and Ubuntu are supported."
+        color r x "Only CentOS, Debian, Fedora, Red Hat, SuSE and Ubuntu are supported."
     fi
     exit 0
 fi
@@ -651,36 +601,25 @@ fi
 if [ "$(id -u)" != "0" ]; then
     clear
     if [ "$langsel" = "1" ]; then
-	    color r x "Sie benoetigen root Rechte."
+        color r x "Sie benoetigen root Rechte."
     else
-	    color r x "You need root privileges."
+        color r x "You need root privileges."
     fi
     exit 0
 fi
 
 
 ##############################
-# Get IP, Hostname, CPU Info #
+# Get IP, Hostname           #
 ##############################
 local_ip=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
 if [ "$local_ip" = "" ]; then
-    host_name=$(hostname -f | awk '{print tolower($0)}')
+    host_name=$(hostname -fhost_name | awk '{print tolower($0)}')
 else
     host_name=$(getent hosts $local_ip | awk '{print tolower($2)}' | head -n 1)
 fi
-cpu_threads=$( awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo )
-
-
-##############################
-# Choose Mining              #
-##############################
-if [ ! -n "$minersel" -a "$cpu_threads" -gt "5" ]; then
-    if [ "$os_version" -gt "12" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -gt "6" -a "$os_name" = "Debian" ]; then
-        serv_virtual=$(systemd-detect-virt)
-        if [ "$serv_virtual" = "none" -o "$cpu_threads" -gt "16" ]; then
-            select_mining "$cpu_threads"
-        fi
-    fi
+if [ "$host_name" = "" ] || [ "$host_name" = "0" ]; then
+    host_name="$local_ip";
 fi
 
 
@@ -692,6 +631,8 @@ if [ ! -n "$modsel" ]; then
 fi
 
 
+chk_netstat
+
 echo "" > /home/tekbase_status.txt
 
 
@@ -701,9 +642,9 @@ echo "" > /home/tekbase_status.txt
 if [ ! -n "$yessel" ]; then
     yesno=""
     if [ "$langsel" = "1" ]; then
-        select_yesno "Es wird jetzt autoconf, automake, build-essential, curl, expect, gcc, hddtemp,\ndmidecode, lm-sensors, m4, make, openjdk, openssl-dev, patch, pwgen, screen, smartmontools, sqlite,\nsudo, sysstat, unzip und wget installiert."
+        select_yesno "Es wird jetzt autoconf, automake, build-essential, curl, expect, gcc, hddtemp,\ndmidecode, lm-sensors, m4, make, net-tools, openjdk, openssl-dev, patch, pwgen,\nscreen, smartmontools, sqlite, sudo, sysstat, unzip und wget installiert."
     else
-        select_yesno "Autoconf, automake, build-essential, curl, expect gcc, hddtemp, dmidecode, lm-sensors, m4, make, openjdk,\nopenssl-dev, patch, pwgen, screen, smartmontools, sqlite, sudo, sysstat, unzip\nand wget is now installed."
+        select_yesno "Autoconf, automake, build-essential, curl, expect gcc, hddtemp, dmidecode,\nlm-sensors, m4, make, net-tools, openjdk, openssl-dev, patch, pwgen, screen,\nsmartmontools, sqlite, sudo, sysstat, unzip and wget is now installed."
     fi
 fi
 
@@ -717,7 +658,7 @@ case "$os_install" in
             chkyes="install"
             zypper update
         fi
-        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp dmidecode lm-sensors sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
             zypper $chkyes $i
         done
         zypper $chkyes -t pattern devel_basis
@@ -731,7 +672,7 @@ case "$os_install" in
             chkyes=""
             apt-get update && apt-get upgrade && apt-get dist-upgrade
         fi     
-        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssl-dev hddtemp dmidecode lm-sensors sysstat smartmontools patch pwgen unzip git; do
+        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssh2-1-dev libssl-dev hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip git; do
             apt-get install $i $chkyes
         done
         if [ "$os_version" -lt "14" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "8" -a "$os_name" = "Debian" ]; then
@@ -751,7 +692,7 @@ case "$os_install" in
         fi
         yum -y install epel-release
         yum repolist
-        for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp dmidecode lm-sensors sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk git; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk git; do
             yum install $i $chkyes
         done
         yum groupinstall 'Development Tools' $chkyes
@@ -780,25 +721,25 @@ if [ $modsel -lt 8 ]; then
 
         if [ "$os_install" = "1" ]; then
             if [ "$modsel" != "7" ]; then
-    	        zypper --non-interactive install apache2
-    	    else
-    	        zypper install apache2	    
-    	    fi
+                zypper --non-interactive install apache2
+            else
+                zypper install apache2	    
+            fi
         fi
         if [ "$os_install" = "2" ]; then
             if [ "$modsel" != "7" ]; then
-    	        export DEBIAN_FRONTEND=noninteractive
-    	        apt-get install apache2 -y
+                export DEBIAN_FRONTEND=noninteractive
+                apt-get install apache2 -y
             else
                 apt-get install apache2
             fi
         fi
         if [ "$os_install" = "3" ]; then
             if [ "$modsel" != "7" ]; then
-    	        yum install httpd -y
-    	    else
-    	        yum install httpd	    
-    	    fi
+                yum install httpd -y
+            else
+                yum install httpd	    
+            fi
         fi
         
         chk_apache $os_install
@@ -852,7 +793,7 @@ if [ $modsel -lt 8 ]; then
         fi
     fi
     if [ "$os_install" = "3" ]; then
-      	for i in php php-common php-cli php-devel php-gd php-mbstring php-mysql php-xml; do
+        for i in php php-common php-cli php-devel php-gd php-mbstring php-mysql php-xml; do
             yum install $i $chkyes
         done
     fi
@@ -886,7 +827,7 @@ if [ $modsel -lt 8 ]; then
         fi
         
         if [ "$os_install" = "1" ]; then
-	        zypper $chkyes mariadb mariadb-tools
+            zypper $chkyes mariadb mariadb-tools
     	    service mysql restart
         fi
         if [ "$os_install" = "2" ]; then
@@ -896,11 +837,11 @@ if [ $modsel -lt 8 ]; then
             
             mysqlpwd=$(gen_passwd 8)
             echo "MySQL root password: $mysqlpwd" > /home/tekbase_mysql.txt
-            
-	        if [ "$os_version" -lt "16" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "9" -a "$os_name" = "Debian" ]; then
-	            mysqlpwd=$(gen_passwd 8)
-	            if [ "$modsel" != "7" ]; then
-	                debconf-set-selections <<< "mysql-server mysql-server/root_password password $mysqlpwd"
+
+            if [ "$os_version" -lt "16" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "9" -a "$os_name" = "Debian" ]; then
+                mysqlpwd=$(gen_passwd 8)
+                if [ "$modsel" != "7" ]; then
+                    debconf-set-selections <<< "mysql-server mysql-server/root_password password $mysqlpwd"
                     debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $mysqlpwd"
                 fi
                 apt-get install mysql-server mysql-client mysql-common $chkyes  	        
@@ -914,7 +855,7 @@ if [ $modsel -lt 8 ]; then
             service mysql restart
         fi
         if [ "$os_install" = "3" ]; then
-    	    yum install mariadb mariadb-server $chkyes
+            yum install mariadb mariadb-server $chkyes
             service mariadb restart
         fi
         
@@ -944,6 +885,7 @@ fi
 # Check Php Version And Path #
 ##############################
 if [ $modsel -lt 8 ]; then
+    service apache2 restart
     php_ioncube=$(php -m | grep -i "ioncube")
     php_geoip=$(php -m | grep -i "geoip")
     php_ssh=$(php -m | grep -i "ssh2") 
@@ -968,18 +910,38 @@ fi
 if [ $modsel -lt 8 ]; then
     if [ "$php_ssh" = "" ]; then
         cd $installhome
-        tar -xzf libssh2-1.6.0.tar.gz
-        cd libssh2-1.6.0
+        
+        if [ ! -f libssh2-1.9.0.tar.gz ]; then
+            wget --no-check-certificate https://www.libssh2.org/download/libssh2-1.9.0.tar.gz
+        fi
+        tar -xzf libssh2-1.9.0.tar.gz
+        cd libssh2-1.9.0
         ./configure --prefix=/usr --with-openssl=/usr && make install
         cd ..
 
-        tar -xzf ssh2-0.12.tgz
-        cd ssh2-0.12
-        phpize && ./configure --with-ssh2 && make install
-        cd ..
+        if [ "$php_version" = "5.6" ] || [ "$php_version" = "7.0" ]; then
+            if [ ! -f ssh2-0.13.tgz ]; then
+                wget --no-check-certificate https://pecl.php.net/get/ssh2-0.13.tgz
+            fi
+            tar -xzf ssh2-0.13.tgz
+            cd ssh2-0.13
+            phpize && ./configure --with-ssh2 && make install
+            cd ..
+            rm -r ssh2-0.13.0
+            rm ssh2-0.13.tgz
+        else
+            if [ ! -f ssh2-1.1.2.tgz ]; then
+                wget --no-check-certificate https://pecl.php.net/get/ssh2-1.1.2.tgz
+            fi
+            tar -xzf ssh2-1.1.2.tgz
+            cd ssh2-1.1.2
+            phpize && ./configure --with-ssh2 && make install
+            cd ..
+            rm -r ssh2-1.1.2
+            rm ssh2-1.1.2.tgz
+        fi
 
-        rm -r libssh2-1.6.0
-        rm -r ssh2-0.12.0
+        rm -r libssh2-1.9.0
         rm package.xml
     
         cd $php_exinidir
@@ -995,8 +957,8 @@ if [ $modsel -lt 8 ]; then
         
         php_ssh=$(php -m | grep -i "ssh2") 
         if [ "$php_ssh" = "" ]; then
-           clear
-           if [ "$langsel" = "1" ]; then
+            clear
+            if [ "$langsel" = "1" ]; then
                 color r x "Die Pecl SSH2 Extension für PHP konnte nicht installiert werden."
                 color r x "Bitte nehmen Sie die Installation selbst vor."
             else
@@ -1020,10 +982,10 @@ if [ $modsel -lt 8 ]; then
         fi
 
         if [ "$os_typ" = "x86_64" ]; then
-            wget http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+            wget --no-check-certificate https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
             tar xvfz ioncube_loaders_lin_x86-64.tar.gz
         else
-            wget http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86.tar.gz
+            wget --no-check-certificate https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86.tar.gz
             tar xvfz ioncube_loaders_lin_x86.tar.gz
         fi
         if [ ! -d ioncube ]; then
@@ -1136,7 +1098,11 @@ fi
 # Mail Check                 #
 ##############################
 if [ $modsel -lt 8 ]; then
-    check=$(netstat -tlpn |grep ":25 ")
+    if [ "$netstat_inst" = "1" ]; then
+        check=$(netstat -tlpn | grep ":25 ")
+    else
+        check=$(ss -tlpn | grep ":25 ")
+    fi
     if [ "$check" = "" ]; then
         check=$(which postfix 2>&-)
         if [ "$check" = "" ]; then
@@ -1154,28 +1120,28 @@ if [ $modsel -lt 8 ]; then
     	            clear
     	            if [ "$modsel" != "7" ]; then
     	                zypper --non-interactive install postfix
-                    else
+    	            else
      	                zypper install postfix       
-                    fi
+    	            fi
     	        ;;
     	        '2')
     	            clear
             	    if [ "$modsel" != "7" ]; then
             	        export DEBIAN_FRONTEND=noninteractive
             	        debconf-set-selections <<< "postfix postfix/mailname string $host_name"
-                        debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+            	        debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
             	        apt-get install postfix -y
-                    else
+            	    else
             	        apt-get install postfix 
-                    fi
+            	    fi
     	        ;;
     	        '3')
             	    clear
             	    if [ "$modsel" != "7" ]; then
             	        yum install postfix -y
-                    else
+            	    else
             	        yum install postfix
-                    fi
+            	    fi
     	        ;;
     	    esac
     	    done
@@ -1190,7 +1156,7 @@ fi
 if [ "$os_install" = "2" ]; then
     apt-get install qstat
     if [ -f /usr/bin/qstat ]; then
-        chmod 0755
+        chmod 0755 /usr/bin/qstat
         cp /usr/bin/qstat /
     fi
     if [ ! -f /usr/bin/qstat -a -f /usr/bin/quakestat ]; then
@@ -1202,7 +1168,15 @@ fi
 
 if [ ! -f /qstat ]; then
     cd $installhome
-    tar -xzf qstat.tar.gz
+    if [ ! -f qstat.tar.gz ]; then
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_qstat.tar.gz
+        tar -xzf tekbase_qstat.tar.gz
+        rm tekbase_qstat.tar.gz
+    else
+        tar -xzf qstat.tar.gz
+        rm qstat.tar.gz 
+    fi
+    
     cd qstat
     ./configure && make all install
     chmod 0755 qstat
@@ -1236,18 +1210,54 @@ fi
 # Install Scripts            #
 ##############################
 if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$modsel" = "5" ] || [ "$modsel" = "8" ] || [ "$modsel" = "9" ]; then
-    cd /home
-    git clone https://gitgem.com/TekLab/tekbase-scripts-linux.git skripte
-    if [ ! -f /skripte/autoupdater ]; then
-		wget http://teklab.s3.amazonaws.com/skripte.tar
-		tar -xzf tekbase_scripts.tar -C /home
-        rm skripte.tar
+    if [ ! -f skripte.tar ]; then
+        cd /home
+        git clone https://gitgem.com/TekLab/tekbase-scripts-linux.git skripte
+        if [ ! -f /skripte/autoupdater ]; then
+            cd $installhome        
+            wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_scripts.tar
+            tar -xzf tekbase_scripts.tar -C /home
+            rm tekbase_scripts.tar
+        fi
+        cd skripte
+        mkdir cache
+        chmod 755 *
+        chmod 777 cache
+        cd $installhome
+        
+        if [ ! -f hlstats.tar ]; then
+            wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_hlstats.tar
+            tar -xzf tekbase_hlstats.tar -C /home/skripte
+            rm tekbase_hlstats.tar
+        else
+            tar -xzf hlstats.tar -C /home/skripte
+            rm hlstats.tar
+        fi
+    else
+        tar -xzf skripte.tar -C /home
+        rm skripte.tar   
     fi
+
     userpwd=$(gen_passwd 8)
     useradd -g users -p $(perl -e 'print crypt("'$userpwd'","Sa")') -s /bin/bash -m user-webi -d /home/user-webi
+
     cd $installhome
-    tar -xzf user-webi.tar -C /home
-    tar -xzf keys.tar -C /home/user-webi
+    if [ ! -f user-webi.tar ]; then
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_user-webi.tar
+        tar -xzf tekbase_user-webi.tar -C /home
+        rm tekbase_user-webi.tar
+    else
+        tar -xzf user-webi.tar -C /home
+        rm user-webi.tar
+    fi
+    if [ ! -f keys.tar ]; then
+		wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_keys.tar
+		tar -xzf tekbase_keys.tar -C /home/user-webi
+        rm tekbase_keys.tar
+    else
+        tar -xzf keys.tar -C /home/user-webi
+        rm keys.tar
+    fi
 
     if [ -d /home/skripte ]; then
         echo "Check scripts: ok" >> /home/tekbase_status.txt
@@ -1349,23 +1359,26 @@ if [ -f /etc/proftpd.conf -o -f /etc/proftpd/proftpd.conf ]; then
         ftp_file="/etc/proftpd/proftpd.conf"
     fi
        
-    if [ -d /etc/proftpd ]; then
-        ftp_folder="proftpd"
-    fi
-    if [ -d /etc/proftp.d ]; then
-        ftp_folder="proftp.d"
+    if [ ! -d /etc/proftpd ]; then
+    	mkdir /etc/proftpd
     fi
     
     if [ ! -f /etc/proftpd/ftpd.passwd ]; then
         touch /etc/proftpd/ftpd.passwd
-        chmod 440 /etc/$ftp_folder/ftpd.passwd
-        chown proftpd.root /etc/$ftp_folder/ftpd.passwd
-        touch /etc/$ftp_folder/ftpd.group
-        chmod 440 /etc/$ftp_folder/ftpd.group
-        chown proftpd.root /etc/$ftp_folder/ftpd.group
+        chmod 440 /etc/proftpd/ftpd.passwd
+        chown proftpd.root /etc/proftpd/ftpd.passwd
+        touch /etc/proftpd/ftpd.group
+        chmod 440 /etc/proftpd/ftpd.group
+        chown proftpd.root /etc/proftpd/ftpd.group
     fi
         
     cp $ftp_file /etc/proftpd.tekbase
+    
+    cd $installhome
+    if [ -f proftpd_settings.cfg ]; then
+    	cat proftpd_settings.cfg >> $ftp_file
+    	echo "" >> $ftp_file
+    fi
 
     sed -i '/^UseReverseDNS*/d' $ftp_file
     sed -i '/^IdentLookups*/d' $ftp_file
@@ -1382,8 +1395,8 @@ if [ -f /etc/proftpd.conf -o -f /etc/proftpd/proftpd.conf ]; then
     echo "DefaultRoot ~" >> $ftp_file
     echo "RequireValidShell off" >> $ftp_file
     echo "AuthOrder mod_auth_pam.c mod_auth_unix.c mod_auth_file.c" >> $ftp_file
-    echo "AuthUserFile /etc/$ftp_folder/ftpd.passwd" >> $ftp_file
-    echo "AuthGroupFile /etc/$ftp_folder/ftpd.group" >> $ftp_file
+    echo "AuthUserFile /etc/proftpd/ftpd.passwd" >> $ftp_file
+    echo "AuthGroupFile /etc/proftpd/ftpd.group" >> $ftp_file
         
     service proftpd restart
     service xinetd restart
@@ -1482,7 +1495,7 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "4" ] || [ "$modsel" = "8" ]; then
 
     su user-webi -c "touch query_ip_blacklist.txt query_ip_whitelist.txt"
     echo "127.0.0.1" >> query_ip_whitelist.txt
-    echo "$tsip" >> query_ip_whitelist.txt
+    echo "$local_ip" >> query_ip_whitelist.txt
     echo "machine_id=" >> ts3server.ini
     echo "default_voice_port=9987" >> ts3server.ini
     echo "voice_ip=0.0.0.0" >> ts3server.ini
@@ -1523,7 +1536,12 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$mods
     portcheck=1
     while [ "$portcheck" != "" ]; do
         daemonport=$((daemonport+1))
-        portcheck=$(netstat -tlpn |grep ":$daemonport ")
+        
+        if [ "$netstat_inst" = "1" ]; then
+            portcheck=$(netstat -tlpn | grep ":$daemonport ")
+        else
+    	    portcheck=$(ss -tlpn | grep ":$daemonport ")
+        fi
         if [ "$portcheck" = "" ]; then
             sed -i '/listen_port*/c\listen_port = '$daemonport'' tekbase.cfg
         fi
@@ -1697,34 +1715,46 @@ if [ $modsel -lt 7 ]; then
                 apt-get install $i $chkyes
             done
         fi
-        
-        if [ -d /opt/plesk/php/7.0/bin ]; then
-            for i in plesk-php70-dev plesk-php70-gd plesk-php70-mbstring plesk-php70-mcrypt plesk-php70-mysql plesk-php70-xml; do
-                apt-get install $i $chkyes
-            done
-            /opt/plesk/php/7.0/bin/pecl install https://pecl.php.net/get/ssh2-1.1.2.tgz
-            if [ -f /opt/plesk/php/7.0/lib/php/modules/ssh2.so ]; then
-                echo "extension=ssh2.so" > /opt/plesk/php/7.0/etc/php.d/ssh2.ini
+
+        cd /opt/plesk/php
+        for phpd in $(find * -maxdepth 0 -type d)
+        do
+            if [ "$(grep -E '^([0-9].[0-9])$' <<< $phpd)" != "" ]; then
+                phpv=${phpd//.}
+                if [ "$phpv" = "56" ]; then
+                    if [ -d /opt/plesk/php/${phpd}/bin ]; then
+                        for i in plesk-php${phpv}-dev plesk-php${phpv}-gd plesk-php${phpv}-mbstring plesk-php${phpv}-mcrypt plesk-php${phpv}-mysql plesk-php${phpv}-xml; do
+                            apt-get install $i $chkyes
+                        done
+                        /opt/plesk/php/${phpd}/bin/pecl install https://pecl.php.net/get/ssh2-0.13.tgz
+                        if [ -f /opt/plesk/php/${phpd}/lib/php/modules/ssh2.so ]; then
+                            echo "extension=ssh2.so" > /opt/plesk/php/${phpd}/etc/php.d/ssh2.ini
+                        fi
+                        /opt/plesk/php/${phpd}/bin/pecl install http://pecl.php.net/get/geoip-1.1.1.tgz
+                         if [ -f /opt/plesk/php/${phpd}/lib/php/modules/geoip.so ]; then
+                            echo "extension=geoip.so" > /opt/plesk/php/${phpd}/etc/php.d/ssh2.ini
+                        fi
+                        /etc/init.d/plesk-php${phpv}-fpm restart
+                    fi    
+
+                else
+                    if [ -d /opt/plesk/php/${phpd}/bin ]; then
+                        for i in plesk-php${phpv}-dev plesk-php${phpv}-gd plesk-php${phpv}-mbstring plesk-php${phpv}-mysql plesk-php${phpv}-xml; do
+                            apt-get install $i $chkyes
+                        done
+                        /opt/plesk/php/${phpd}/bin/pecl install https://pecl.php.net/get/ssh2-1.1.2.tgz
+                        if [ -f /opt/plesk/php/${phpd}/lib/php/modules/ssh2.so ]; then
+                            echo "extension=ssh2.so" > /opt/plesk/php/${phpd}/etc/php.d/ssh2.ini
+                        fi
+                        /opt/plesk/php/${phpd}/bin/pecl install http://pecl.php.net/get/geoip-1.1.1.tgz
+                        if [ -f /opt/plesk/php/${phpd}/lib/php/modules/geoip.so ]; then
+                            echo "extension=geoip.so" > /opt/plesk/php/${phpd}/etc/php.d/ssh2.ini
+                        fi
+                        /etc/init.d/plesk-php${phpv}-fpm restart
+                    fi
+                fi
             fi
-            /opt/plesk/php/7.0/bin/pecl install http://pecl.php.net/get/geoip-1.1.1.tgz
-             if [ -f  /opt/plesk/php/7.0/lib/php/modules/geoip.so ]; then
-                echo "extension=geoip.so" > /opt/plesk/php/7.0/etc/php.d/ssh2.ini
-            fi
-        fi
-        if [ -d /opt/plesk/php/5.6/bin ]; then
-            for i in plesk-php56-dev plesk-php56-gd plesk-php56-mbstring plesk-php56-mcrypt plesk-php56-mysql plesk-php56-xml; do
-                apt-get install $i $chkyes
-            done
-            /opt/plesk/php/5.6/bin/pecl install https://pecl.php.net/get/ssh2-0.13.tgz
-            if [ -f /opt/plesk/php/5.6/lib/php/modules/ssh2.so ]; then
-                echo "extension=ssh2.so" > /opt/plesk/php/5.6/etc/php.d/ssh2.ini
-            fi
-            /opt/plesk/php/5.6/bin/pecl install http://pecl.php.net/get/geoip-1.1.1.tgz
-             if [ -f  /opt/plesk/php/5.6/lib/php/modules/geoip.so ]; then
-                echo "extension=geoip.so" > /opt/plesk/php/5.6/etc/php.d/ssh2.ini
-            fi
-        fi
-        
+        done
     fi
 fi
 
@@ -1735,7 +1765,11 @@ fi
 if [ $modsel -lt 7 ]; then
     cd $installhome
 
-	wget teklab.s3.amazonaws.com/tekbase.zip
+	if [ "$php_version" = "5.6" ] || [ "$php_version" = "7.0" ]; then
+		wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase.zip
+    else
+		wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_php56.zip    
+    fi
     unzip tekbase.zip
     rm tekbase.zip
 
@@ -1785,6 +1819,7 @@ if [ $modsel -lt 7 ]; then
     echo "\$dbtype = \"mysqli\";" >> $wwwpath/tekbase/config.php
     echo "\$sitekey = \"$tekpwd\";" >> $wwwpath/tekbase/config.php
     echo "\$gfx_chk = \"1\";" >> $wwwpath/tekbase/config.php
+    echo "\$ipv6 = \"1\";" >> $wwwpath/tekbase/config.php
     echo "\$shopcodes = \"00000\";" >> $wwwpath/tekbase/config.php
     echo "\$max_logins = \"7\";" >> $wwwpath/tekbase/config.php
     echo "\$awidgetone = \"Members,group,members_all.php, ,3\";" >> $wwwpath/tekbase/config.php
@@ -1793,9 +1828,6 @@ if [ $modsel -lt 7 ]; then
     echo "// FTP Login: tekbaseftp, FTP Passwort: $tekpwd" >> $wwwpath/tekbase/config.php
     echo "?>" >> $wwwpath/tekbase/config.php
     
-    if [ "$minersel" = "1" ]; then
-        echo "<?php echo 'all systems running'; ?>" >> $wwwpath/tekbase/includes/includes/lite.php
-    fi
     chmod 0777 $wwwpath/tekbase/cache
     chmod 0777 $wwwpath/tekbase/pdf
     chmod 0777 $wwwpath/tekbase/resources
@@ -1821,8 +1853,12 @@ testli=$(wget -q --post-data "op=insert&$site_url" -O - http://licenses1.tekbase
 ##############################
 # DB Inserts                 #
 ##############################
-if [ "$local_ip" != "" ]; then 
-    ssh_port=`netstat -tlpn | grep -e '0.0.0.0.*ssh' | awk -F ":" '{print $2}' | awk '{print $1}'`
+if [ "$local_ip" != "" ]; then
+    if [ "$netstat_inst" = "1" ]; then
+        ssh_port=`netstat -tlpn | grep -e 'ssh' | awk -F ":" '{print $2}' | awk '{print $1}'`
+    else
+        ssh_port=`ss -tlpn | grep -e 'ssh' | awk -F ":" '{print $2}' | awk '{print $1}'`
+    fi
     if [ "$ssh_port" = "" ]; then
         ssh_port=22
     fi
@@ -1836,13 +1872,7 @@ fi
 ##############################
 # Finish                     #
 ##############################
-rm libssh2-1.6.0.tar.gz
-rm ssh2-0.12.tgz
-rm qstat.tar.gz
-rm user-webi.tar
-rm keys.tar
-rm teamspeak3-server_linux-x86-64.tar.gz
-rm teamspeak3-server_linux-x86.tar.gz
+cd $installhome
 cd /usr/local
 rm ioncube_x86-64.tar.gz
 rm ioncube_x86.tar.gz
@@ -1912,7 +1942,3 @@ if [ "$os_install" = "2" ]; then
 fi
 
 exit 0
-
-#cores=$( awk -F: '/model name/ {core++} END {print core}' /proc/cpuinfo )
-#systemd-detect-virt
-#grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}'

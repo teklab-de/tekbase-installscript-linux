@@ -45,10 +45,11 @@ os_version=$6
 os_typ=$(uname -m)
 
 # If you are a reseller then enter your reseller ID and Key, otherwise this parameters are empty
-resellerid=$7
-resellerkey=$8
+# !currently not available!
+# resellerid=$7
+# resellerkey=$8
 
-installhome=`pwd`
+installhome=$(pwd)
 
 
 ##############################
@@ -887,9 +888,9 @@ fi
 if [ $modsel -lt 8 ]; then
     service apache2 restart
     php_ioncube=$(php -m | grep -i "ioncube")
-    php_geoip=$(php -m | grep -i "geoip")
+    # php_geoip=$(php -m | grep -i "geoip")
     php_ssh=$(php -m | grep -i "ssh2") 
-    php_gd=$(php -m | grep -i "gd") 
+    # php_gd=$(php -m | grep -i "gd") 
     php_version=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
     php_inidir=$(php -r "echo PHP_CONFIG_FILE_PATH;")
     php_extdir=$(php -r "echo PHP_EXTENSION_DIR;")
@@ -1314,7 +1315,7 @@ fi
 if [ "$install_ftp" = "1" -a -f /etc/proftpd.conf ]; then
     install_ftp="0"
 fi
-if  [ "$install_ftp" = "1" -a -f /etc/proftpd/proftpd.conf ]; then
+if [ "$install_ftp" = "1" -a -f /etc/proftpd/proftpd.conf ]; then
     install_ftp="0"
 fi
 if [ "$install_ftp" = "1" -a -f /etc/vsftpd.conf ]; then
@@ -1324,25 +1325,25 @@ fi
 if [ "$install_ftp" = "1" ]; then
     if [ "$os_install" = "1" ]; then
         if [ "$modsel" != "7" ]; then
-  	        zypper --non-interactive install vsftpd
+            zypper --non-interactive install vsftpd
         else
-  	        zypper install vsftpd
+            zypper install vsftpd
         fi
     fi
     if [ "$os_install" = "2" ]; then
         if [ "$modsel" != "7" ]; then
-    		export DEBIAN_FRONTEND=noninteractive
-    		debconf-set-selections <<< "proftpd-basic shared/proftpd/inetd_or_standalone select standalone"
-    		apt-get install proftpd -y
+            export DEBIAN_FRONTEND=noninteractive
+            debconf-set-selections <<< "proftpd-basic shared/proftpd/inetd_or_standalone select standalone"
+            apt-get install proftpd -y
         else
-    		apt-get install proftpd
+            apt-get install proftpd
         fi
     fi
     if [ "$os_install" = "3" ]; then
         if [ "$modsel" != "7" ]; then
-    		yum install proftpd -y
+            yum install proftpd -y
         else
-    		yum install proftpd
+            yum install proftpd
         fi
     fi
 fi
@@ -1430,7 +1431,7 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "4" ] || [ "$modsel" = "8" ]; then
     adminpwd=$(gen_passwd 8)
     
     ps -u user-webi | grep ts3server | awk '{print $1}' | while read pid; do
-        kill $pid
+    kill $pid
     done 
     
     if [ -f /home/user-webi/teamspeak3/ts3server_startscript.sh ]; then
@@ -1649,8 +1650,8 @@ if [ $modsel -lt 7 ]; then
     
     if [ "$wwwok" = "0" ]; then
         if [ -d /srv/www/htdocs ]; then
-        	wwwpath="/srv/www/htdocs"
-        	wwwok=1
+            wwwpath="/srv/www/htdocs"
+            wwwok=1
         fi
     fi
     
@@ -1765,10 +1766,10 @@ fi
 if [ $modsel -lt 7 ]; then
     cd $installhome
 
-	if [ "$php_version" = "5.6" ] || [ "$php_version" = "7.0" ]; then
-		wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase.zip
+    if [ "$php_version" = "5.6" ] || [ "$php_version" = "7.0" ]; then
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase.zip
     else
-		wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_php56.zip    
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_php56.zip    
     fi
     unzip tekbase.zip
     rm tekbase.zip
@@ -1777,7 +1778,7 @@ if [ $modsel -lt 7 ]; then
     tekpwd=$(gen_passwd 8)
     tekdb=$(gen_passwd 4)
 
-	if [ "$os_install" = "2" ]; then
+    if [ "$os_install" = "2" ]; then
     	mysqlpwd=$(cat /etc/mysql/debian.cnf | grep -i password | awk 'NR == 1 {print $3}')
         mysqlusr=$(cat /etc/mysql/debian.cnf | grep -i user | awk 'NR == 1 {print $3}')
     else
@@ -1785,17 +1786,16 @@ if [ $modsel -lt 7 ]; then
         mysqlusr="root"
         if [ "$mysqlpwd" = "" ]; then
     	    if [ "$langsel" = "1" ]; then
-        	    echo "Bitte geben Sie das MySQL Root Passwort an, dies wurde Ihnen von"
-        	    echo "Ihrem Serveranbieter bereits genannt (Root Passwort vielleicht)."
-        	    echo ""
-        	    echo -n "Passwort: "
+                echo "Bitte geben Sie das MySQL Root Passwort an, dies wurde Ihnen von"
+                echo "Ihrem Serveranbieter bereits genannt (Root Passwort vielleicht)."
+                echo ""
+                echo -n "Passwort: "
             else
                 echo "Please input the MySQL Root password. You get this from from"
                 echo "your server provider (in example Root password)."
                 echo ""
-        	    echo -n "Password: "
-            fi
-        
+                echo -n "Password: "
+            fi      
             read mysqlpwd
         fi
     fi
@@ -1805,8 +1805,8 @@ if [ $modsel -lt 7 ]; then
     Q3="FLUSH PRIVILEGES;"
     SQL="${Q1}${Q2}${Q3}"
 
-    sqlcreate=$(mysql --user=$mysqlusr --password=$mysqlpwd -e "$SQL")
-    sqlinsert=$(mysql --user=tekbase_$tekdb --password=$tekpwd tekbase_$tekdb < $wwwpath/tekbase/install/database.sql)
+    mysql --user=$mysqlusr --password=$mysqlpwd -e "$SQL"
+    mysql --user=tekbase_$tekdb --password=$tekpwd tekbase_$tekdb < $wwwpath/tekbase/install/database.sql
 
     rm -r $wwwpath/tekbase/install
 
@@ -1842,12 +1842,12 @@ if [ $modsel -lt 7 ]; then
     echo "FTP Password: $tekpwd" >> /home/tekbase_ftp.txt
 
     sleep 5
-    createlic=$(wget -q -O - http://$site_url/tekbase/admin.php)
+    wget -q -O - http://$site_url/tekbase/admin.php
 else
     cd $installhome
     rm -r tekbase
 fi
-testli=$(wget -q --post-data "op=insert&$site_url" -O - http://licenses1.tekbase.de/wiauthorized.php)
+wget -q --post-data "op=insert&$site_url" -O - http://licenses1.tekbase.de/wiauthorized.php
 
 
 ##############################
@@ -1855,9 +1855,9 @@ testli=$(wget -q --post-data "op=insert&$site_url" -O - http://licenses1.tekbase
 ##############################
 if [ "$local_ip" != "" ]; then
     if [ "$netstat_inst" = "1" ]; then
-        ssh_port=`netstat -tlpn | grep -e 'ssh' | awk -F ":" '{print $2}' | awk '{print $1}'`
+        ssh_port=$(netstat -tlpn | grep -e 'ssh' | awk -F ":" '{print $2}' | awk '{print $1}')
     else
-        ssh_port=`ss -tlpn | grep -e 'ssh' | awk -F ":" '{print $2}' | awk '{print $1}'`
+        ssh_port=$(ss -tlpn | grep -e 'ssh' | awk -F ":" '{print $2}' | awk '{print $1}')
     fi
     if [ "$ssh_port" = "" ]; then
         ssh_port=22

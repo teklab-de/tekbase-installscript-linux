@@ -1213,7 +1213,7 @@ fi
 if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$modsel" = "5" ] || [ "$modsel" = "8" ] || [ "$modsel" = "9" ]; then
     if [ ! -f skripte.tar ]; then
         cd /home
-        git clone https://gitgem.com/TekLab/tekbase-scripts-linux.git skripte
+        git clone https://github.com/teklab-de/tekbase-scripts-linux.git skripte
         if [ ! -f /skripte/autoupdater ]; then
             cd $installhome        
             wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_scripts.tar

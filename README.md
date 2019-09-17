@@ -14,4 +14,4 @@ cd tekbase-installscript-linux
 ```
 
 ## License
-Copyright (c) TekLab.de. Code released under the [OPL v1.0 License](http://https://gitgem.com/TekLab/tekbase-installscript-linux/src/branch/master/LICENSE). The use by other commercial control panel providers is explicitly prohibited.
+Copyright (c) TekLab.de. Code released under the [OPL v1.0 License](https://github.com/teklab-de/tekbase-installscript-linux/src/branch/master/LICENSE). The use by other commercial control panel providers is explicitly prohibited.

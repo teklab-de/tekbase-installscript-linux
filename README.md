@@ -8,7 +8,7 @@ Under "Releases" you will find the download for your TekBASE version.
 
 ```
 cd /home
-git clone https://gitgem.com/TekLab/tekbase-installscript-linux.git
+git clone https://github.com/teklab-de/tekbase-installscript-linux.git
 cd tekbase-installscript-linux
 ./webinstall.sh
 ```

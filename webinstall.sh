@@ -94,7 +94,7 @@ function gen_passwd {
 function loading {
     SPINNER=("-" "\\" "|" "/")
 
-    for SEQUENCE in $(seq 1 $1); do
+    for sequence in $(seq 1 $1); do
         for I in "${SPINNER[@]}"; do
             echo -ne "\b$I"
             sleep 0.1

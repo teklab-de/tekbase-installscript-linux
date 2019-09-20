@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # TekBase - Server Control Panel
-# Copyright TekLab
+# Copyright since 2005 TekLab
 # Christian Frankenstein
-# Website: https://teklab.de
+# Website: teklab.de
+#          teklab.net
 # Email: service@teklab.de
 # Discord: https://discord.gg/K49XAPv
 
@@ -1492,7 +1493,7 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "4" ] || [ "$modsel" = "8" ]; then
     fi
     loading 25
     su user-webi -c "./ts3server_startscript.sh stop"
-    cat tsout.txt | grep -i "token=" | awk '{print $1}' > /home/tekbase_ts3.txt
+    grep -i "token=" tsout.txt | awk '{print $1}' > /home/tekbase_ts3.txt
 
     su user-webi -c "touch query_ip_blacklist.txt query_ip_whitelist.txt"
     echo "127.0.0.1" >> query_ip_whitelist.txt
@@ -1779,8 +1780,8 @@ if [ $modsel -lt 7 ]; then
     tekdb=$(gen_passwd 4)
 
     if [ "$os_install" = "2" ]; then
-    	mysqlpwd=$(cat /etc/mysql/debian.cnf | grep -i password | awk 'NR == 1 {print $3}')
-        mysqlusr=$(cat /etc/mysql/debian.cnf | grep -i user | awk 'NR == 1 {print $3}')
+    	mysqlpwd=$(grep -i password /etc/mysql/debian.cnf | awk 'NR == 1 {print $3}')
+        mysqlusr=$(grep -i user /etc/mysql/debian.cnf | awk 'NR == 1 {print $3}')
     else
         clear
         mysqlusr="root"

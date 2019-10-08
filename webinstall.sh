@@ -1772,13 +1772,13 @@ if [ $modsel -lt 7 ]; then
     else
         wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_php56.zip    
     fi
-    unzip tekbase.zip
-    rm tekbase.zip
+    unzip tekbase*.zip
+    rm tekbase*.zip
 
     mv tekbase $wwwpath
     tekpwd=$(gen_passwd 8)
-    tekdb=$(gen_passwd 4)
-
+    tekdb=$(gen_passwd 4)  
+    
     if [ "$os_install" = "2" ]; then
     	mysqlpwd=$(grep -i password /etc/mysql/debian.cnf | awk 'NR == 1 {print $3}')
         mysqlusr=$(grep -i user /etc/mysql/debian.cnf | awk 'NR == 1 {print $3}')
@@ -1801,10 +1801,11 @@ if [ $modsel -lt 7 ]; then
         fi
     fi
 
-    Q1="CREATE DATABASE IF NOT EXISTS tekbase_$tekdb;"
-    Q2="GRANT ALL PRIVILEGES ON tekbase_$tekdb.* TO 'tekbase_$tekdb'@'localhost' IDENTIFIED BY '$tekpwd' WITH GRANT OPTION;"
-    Q3="FLUSH PRIVILEGES;"
-    SQL="${Q1}${Q2}${Q3}"
+    Q1="SET sql_mode = '';"
+    Q2="CREATE DATABASE IF NOT EXISTS tekbase_$tekdb;"
+    Q3="GRANT ALL PRIVILEGES ON tekbase_$tekdb.* TO 'tekbase_$tekdb'@'localhost' IDENTIFIED BY '$tekpwd' WITH GRANT OPTION;"
+    Q4="FLUSH PRIVILEGES;"
+    SQL="${Q1}${Q2}${Q3}${Q4}"
 
     mysql --user=$mysqlusr --password=$mysqlpwd -e "$SQL"
     mysql --user=tekbase_$tekdb --password=$tekpwd tekbase_$tekdb < $wwwpath/tekbase/install/database.sql

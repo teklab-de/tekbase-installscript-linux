@@ -1776,6 +1776,7 @@ if [ $modsel -lt 7 ]; then
     rm tekbase*.zip
 
     mv tekbase $wwwpath
+
     tekpwd=$(gen_passwd 8)
     tekdb=$(gen_passwd 4)  
     

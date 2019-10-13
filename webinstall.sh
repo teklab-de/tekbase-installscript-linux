@@ -1768,9 +1768,9 @@ if [ $modsel -lt 7 ]; then
     cd $installhome
 
     if [ "$php_version" = "5.6" ] || [ "$php_version" = "7.0" ]; then
-        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase.zip
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_php56.zip
     else
-        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_php56.zip    
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase.zip    
     fi
     unzip tekbase*.zip
     rm tekbase*.zip

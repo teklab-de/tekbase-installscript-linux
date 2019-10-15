@@ -678,9 +678,9 @@ case "$os_install" in
             apt-get install $i $chkyes
         done
         if [ "$os_version" -lt "14" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "8" -a "$os_name" = "Debian" ]; then
-            apt-get install openjdk-7-jre $chkyes
+            apt-get install openjdk-7-jre ia32-libs $chkyes
         else
-            apt-get install openjdk-8-jre $chkyes        
+            apt-get install openjdk-8-jre libcurl3-gnutls:i386 $chkyes        
         fi
     ;;
     '3')

@@ -795,7 +795,7 @@ if [ $modsel -lt 8 ]; then
         fi
     fi
     if [ "$os_install" = "3" ]; then
-        for i in php php-common php-cli php-devel php-gd php-mbstring php-mysql php-xml; do
+        for i in php php-common php-cli php-devel php-gd php-json php-mbstring php-mysql php-pecl-ssh2 php-xml php-pecl-zip; do
             yum install $i $chkyes
         done
     fi
@@ -1226,20 +1226,20 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$mods
         chmod 755 *
         chmod 777 cache
         cd $installhome
-        
-        if [ ! -f hlstats.tar ]; then
-            wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_hlstats.tar
-            tar -xzf tekbase_hlstats.tar -C /home/skripte
-            rm tekbase_hlstats.tar
-        else
-            tar -xzf hlstats.tar -C /home/skripte
-            rm hlstats.tar
-        fi
     else
         tar -xzf skripte.tar -C /home
         rm skripte.tar   
     fi
 
+    if [ ! -f hlstats.tar ]; then
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_hlstats.tar
+        tar -xzf tekbase_hlstats.tar -C /home/skripte
+        rm tekbase_hlstats.tar
+    else
+        tar -xzf hlstats.tar -C /home/skripte
+        rm hlstats.tar
+    fi
+    
     userpwd=$(gen_passwd 8)
     useradd -g users -p $(perl -e 'print crypt("'$userpwd'","Sa")') -s /bin/bash -m user-webi -d /home/user-webi
 

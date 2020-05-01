@@ -238,8 +238,6 @@ function chk_panel {
         web_panel="Plesk"
     elif [ -f /usr/local/vesta/bin/v-change-user-password ]; then
         web_panel="VestaCP"
-    elif [ -d /root/confixx ]; then
-        web_panel="Confixx"
     elif [ -d /var/www/froxlor ]; then
         web_panel="Froxlor"
     elif [ -d /etc/imscp ]; then
@@ -554,6 +552,70 @@ function select_url {
                 let urlcounter=$urlcounter+1
             fi
         fi
+    done
+}
+
+
+##############################
+# Select SSH Keys            #
+##############################
+function select_sshkeys {
+    clear
+    if [ "$langsel" = "1" ]; then
+        echo "SSH Key Auswahl"
+        echo ""
+        echo "Sollen eigene SSH Keys generiert werden? Dies wird für den"
+	echo "ersten beziehungsweise einzigen Server empfohlen."
+        echo ""
+        echo "(1) Ja"
+        echo "(2) Nein"
+        echo "(3) Exit"
+    else
+        echo "SSH Key selection"
+        echo ""
+        echo "Should own SSH keys be generated? This is recommended for the"
+	echo "first or only server."
+        echo ""
+        echo "(1) Yes"
+        echo "(2) No"
+        echo "(3) Exit"
+    fi
+    echo ""
+
+    if [ "$langsel" = "1" ]; then
+        if [ "$sshsel" = "" ]; then
+            echo -n "Bitte geben Sie ihre Auswahl an: "
+        else
+            color r n "Bitte geben Sie entweder 1,2 oder 3 ein: "
+        fi
+    else
+        if [ "$sshsel" = "" ]; then
+            echo -n "Please enter your selection: "
+        else
+            color r n "Please enter either 1,2 or 3: "
+        fi
+    fi
+
+    read -n 1 sshsel
+
+    for i in $sshsel; do
+    case "$i" in
+        '1')
+            clear
+        ;;
+        '2')
+            clear
+        ;;
+        '0')
+            clear
+            exit 0
+        ;;
+        *)
+            sshsel=99
+            clear
+            select_sshkeys
+        ;;
+    esac
     done
 }
 
@@ -1253,8 +1315,8 @@ if [ "$modsel" = "1" ] || [ "$modsel" = "2" ] || [ "$modsel" = "4" ] || [ "$mods
         rm user-webi.tar
     fi
     if [ ! -f keys.tar ]; then
-		wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_keys.tar
-		tar -xzf tekbase_keys.tar -C /home/user-webi
+        wget --no-check-certificate https://teklab.s3.amazonaws.com/tekbase_keys.tar
+        tar -xzf tekbase_keys.tar -C /home/user-webi
         rm tekbase_keys.tar
     else
         tar -xzf keys.tar -C /home/user-webi
@@ -1556,7 +1618,7 @@ fi
 ##############################
 # Configure WWW              #
 ##############################
-if [ $modsel -lt 7 ]; then
+if [ $modsel -lt 8 ]; then
     wwwok=0
     site_url=$host_name
     
@@ -1565,13 +1627,6 @@ if [ $modsel -lt 7 ]; then
         wwwok=1
     fi
     
-    if [ "$wwwok" = "0" ]; then
-        if [ -d /home/www/confixx ]; then
-            wwwpath="/home/www/confixx/html"
-            wwwok=1
-        fi
-    fi
-
     if [ "$wwwok" = "0" ]; then
         if [ -d /var/www/vhosts/$site_url/httpdocs ]; then
     	    wwwpath="/var/www/vhosts/$site_url/httpdocs"
@@ -1600,13 +1655,6 @@ if [ $modsel -lt 7 ]; then
         fi
     fi
     
-    if [ "$wwwok" = "0" ]; then
-        if [ -d /var/www/confixx/html ]; then
-    	    wwwpath="/var/www/confixx/html"
-    	    wwwok=1
-        fi
-    fi
-
     if [ "$wwwok" = "0" ]; then
         if [ -d /srv/www/vhosts/$site_url/httpdocs ]; then
     	    wwwpath="/srv/www/vhosts/$site_url/httpdocs"
@@ -1641,14 +1689,7 @@ if [ $modsel -lt 7 ]; then
     	    wwwok=1
         fi
     fi
-    
-    if [ "$wwwok" = "0" ]; then
-        if [ -d /srv/www/confixx/html ]; then
-    	    wwwpath="/srv/www/confixx/html"
-    	    wwwok=1
-        fi
-    fi
-    
+     
     if [ "$wwwok" = "0" ]; then
         if [ -d /srv/www/htdocs ]; then
             wwwpath="/srv/www/htdocs"
@@ -1710,7 +1751,7 @@ fi
 ##############################
 # Plesk                      #
 ##############################
-if [ $modsel -lt 7 ]; then
+if [ $modsel -lt 8 ]; then
     if [ "$web_panel" = "Plesk" -a -d /var/www/vhosts ]; then
         if [ "$os_install" = "2" ]; then
             for i in libgeoip-dev geoip-bin geoip-database libssh2-1-dev; do
@@ -1734,7 +1775,7 @@ if [ $modsel -lt 7 ]; then
                         fi
                         /opt/plesk/php/${phpd}/bin/pecl install http://pecl.php.net/get/geoip-1.1.1.tgz
                          if [ -f /opt/plesk/php/${phpd}/lib/php/modules/geoip.so ]; then
-                            echo "extension=geoip.so" > /opt/plesk/php/${phpd}/etc/php.d/ssh2.ini
+                            echo "extension=geoip.so" > /opt/plesk/php/${phpd}/etc/php.d/geoip.ini
                         fi
                         /etc/init.d/plesk-php${phpv}-fpm restart
                     fi    
@@ -1750,7 +1791,7 @@ if [ $modsel -lt 7 ]; then
                         fi
                         /opt/plesk/php/${phpd}/bin/pecl install http://pecl.php.net/get/geoip-1.1.1.tgz
                         if [ -f /opt/plesk/php/${phpd}/lib/php/modules/geoip.so ]; then
-                            echo "extension=geoip.so" > /opt/plesk/php/${phpd}/etc/php.d/ssh2.ini
+                            echo "extension=geoip.so" > /opt/plesk/php/${phpd}/etc/php.d/geoip.ini
                         fi
                         /etc/init.d/plesk-php${phpv}-fpm restart
                     fi
@@ -1764,7 +1805,7 @@ fi
 ##############################
 # Install TekBASE            #
 ##############################
-if [ $modsel -lt 7 ]; then
+if [ $modsel -lt 8 ]; then
     cd $installhome
 
     if [ "$php_version" = "5.6" ] || [ "$php_version" = "7.0" ]; then
@@ -1871,6 +1912,43 @@ if [ "$local_ip" != "" ]; then
 EOF
 fi
 
+
+##############################
+# Install SSH Keys           #
+##############################
+if [ "$modsel" != "3" ] || [ "$modsel" != "6" ]; then
+    if [ ! -n "$yessel" ]; then
+        select_sshkeys
+        sshsel=0
+    fi
+    if [ "$sshsel" = "1" ]; then
+        if [ ! -d "/home/user-webi/.ssh" ]; then
+	    mkdir "/home/user-webi/.ssh"
+        else
+            rm -r "/home/user-webi/.ssh"
+	    mkdir "/home/user-webi/.ssh"
+        fi
+	
+	ssh-keygen -t rsa -b 4096 -N '' -f /home/user-webi/.ssh/id_rsa  
+	cp /home/user-webi/.ssh/id_rsa.pub /home/user-webi/.ssh/authorized_keys
+	chown -R user-webi:users .ssh
+	chmod 0700 .ssh
+	if [ $modsel -lt 8 ]; then
+	    mv /home/user-webi/.ssh/id_rsa.* $wwwpath/tekbase/tmp
+	fi
+    fi
+fi
+
+
+##############################
+# TekBASE 8.x compatibility  #
+##############################
+cd /home/skripte
+for FILE in $(find *.sh)
+do
+    cp $FILE ${FILE%.sh}
+done
+ 
 
 ##############################
 # Finish                     #

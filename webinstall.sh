@@ -89,6 +89,30 @@ function gen_passwd {
 
 
 ##############################
+# Generate Logs	             #
+##############################
+function gen_logs {
+    log_text=$1
+    if [ "$log_text" = "" ]; then
+        echo "##############################" >> /home/tekbase.log
+        echo "# TekBASE installation       #" >> /home/tekbase.log
+        echo "##############################" >> /home/tekbase.log
+	echo "[$(date +"%Y_%m-%H_%M_%S")] - start" >> /home/tekbase.log
+    else
+    	if [ "$2" != "" ]; then
+            pkg_check=$(dpkg-query -W --showformat='${Status}\n' $2|grep "install ok installed")
+            if [ "$check" == "install ok installed" ]; then
+		log_text="The Package ${2} is installed."
+            else
+		log_text="The Package ${2} could not be installed."    
+	    fi
+	fi
+        echo "[$(date +"%Y_%m-%H_%M_%S")] - ${log_text}" >> /home/tekbase.log
+    fi
+}
+
+
+##############################
 # Loading Spinner            #
 ##############################
 function loading {
@@ -606,7 +630,7 @@ function select_sshkeys {
         '2')
             clear
         ;;
-        '0')
+        '3')
             clear
             exit 0
         ;;
@@ -627,6 +651,7 @@ if [ ! -n "$langsel" ]; then
     select_lang
 fi
 
+gen_logs "" ""
 
 ##############################
 # Test OS                    #
@@ -652,6 +677,7 @@ if [ ! -n "$yessel" ]; then
     else
         select_yesno "Your system: $os_name $os_version - $os_typ. Is this correct?"
     fi
+    gen_logs "System: $os_name $os_version -  $os_typ" ""  
 fi
 
 
@@ -669,6 +695,7 @@ if [ "$(id -u)" != "0" ]; then
     else
         color r x "You need root privileges."
     fi
+    gen_logs "You need root privileges. Install script was stopped." ""
     exit 0
 fi
 
@@ -685,6 +712,7 @@ fi
 if [ "$host_name" = "" ] || [ "$host_name" = "0" ]; then
     host_name="$local_ip";
 fi
+gen_logs "Hostname and IP - $host_name, $local_ip" ""
 
 
 ##############################
@@ -724,6 +752,7 @@ case "$os_install" in
         fi
         for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
             zypper $chkyes $i
+	    gen_logs "-" "${i}"
         done
         zypper $chkyes -t pattern devel_basis
     ;;
@@ -738,6 +767,7 @@ case "$os_install" in
         fi     
         for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssh2-1-dev libssl-dev hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip git; do
             apt-get install $i $chkyes
+	    gen_logs "-" "${i}"
         done
         if [ "$os_version" -lt "14" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "8" -a "$os_name" = "Debian" ]; then
             apt-get install openjdk-7-jre ia32-libs $chkyes
@@ -758,6 +788,7 @@ case "$os_install" in
         yum repolist
         for i in autoconf automake m4 make screen sudo curl wget sqlite expect gcc openssl-devel hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip java-1.8.0-openjdk git; do
             yum install $i $chkyes
+	    gen_logs "-" "${i}"
         done
         yum groupinstall 'Development Tools' $chkyes
     ;;
@@ -818,9 +849,11 @@ if [ $modsel -lt 8 ]; then
                 color r x "Please install it yourself."
             fi 
             echo "Check apache: error" >> /home/tekbase_status.txt
+	    gen_logs "*** The Apache web server could not be installed." ""
             exit 0
         fi
         echo "Check apache: ok" >> /home/tekbase_status.txt
+	gen_logs "*** The Apache web server is installed." ""
     else
         echo "Check apache: ok" >> /home/tekbase_status.txt    
     fi
@@ -838,10 +871,12 @@ if [ $modsel -lt 8 ]; then
         if [ "$os_version" -lt "42" ]; then
             for i in apache2-mod-php5 php5 php5-common php5-cli php5-curl php5-devel php5-gd php5-geoip php5-json php5-mail php5-mcrypt php5-mbstring php5-mysql php5-ssh2 php5-xml php5-zip; do
                 zypper $chkyes $i
+		gen_logs "-" "${i}"
             done
         else
             for i in apache2-mod-php7 php7 php7-common php7-cli php7-curl php7-devel php7-gd php7-geoip php7-json php7-mail php7-mcrypt php7-mbstring php7-mysql php7-ssh2 php7-xml php7-zip; do
                 zypper $chkyes $i
+		gen_logs "-" "${i}"
             done
         fi
     fi
@@ -849,16 +884,19 @@ if [ $modsel -lt 8 ]; then
      	if [ "$os_version" -lt "16" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "9" -a "$os_name" = "Debian" ]; then
       	    for i in libapache2-mod-php5 php5 php5-common php5-cli php5-curl php5-dev php5-gd php5-geoip php5-json php5-mail php5-mcrypt php5-mbstring php5-mysql php5-ssh2 php5-xml php5-zip; do
                 apt-get install $i $chkyes
+		gen_logs "-" "${i}"
             done
         else
             for i in libapache2-mod-php php php-common php-cli php-curl php-dev php-gd php-geoip php-json php-mail php-mcrypt php-mbstring php-mysql php-ssh2 php-xml php-zip; do
                 apt-get install $i $chkyes
+		gen_logs "-" "${i}"
             done
         fi
     fi
     if [ "$os_install" = "3" ]; then
         for i in php php-common php-cli php-devel php-gd php-json php-mbstring php-mysql php-pecl-ssh2 php-xml php-pecl-zip; do
             yum install $i $chkyes
+	    gen_logs "-" "${i}"
         done
     fi
     
@@ -874,9 +912,11 @@ if [ $modsel -lt 8 ]; then
             color r x "Please install it yourself."
         fi 
         echo "Check php: error" >> /home/tekbase_status.txt
+	gen_logs "*** PHP could not be installed." ""
         exit 0
     fi
     echo "Check php: ok" >> /home/tekbase_status.txt
+    gen_logs "*** PHP is installed." ""
 
     chk_mysql $os_install
     

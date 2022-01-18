@@ -1495,12 +1495,12 @@ if [ -f /etc/proftpd.conf -o -f /etc/proftpd/proftpd.conf ]; then
 
     echo "AllowOverwrite on" >> $ftp_file
     echo "UseReverseDNS off" >> $ftp_file
-    echo "IdentLookups off" >> $ftp_file
+    #echo "IdentLookups off" >> $ftp_file
     echo "DefaultRoot ~" >> $ftp_file
     echo "RequireValidShell off" >> $ftp_file
-    echo "AuthOrder mod_auth_pam.c mod_auth_unix.c mod_auth_file.c" >> $ftp_file
-    echo "AuthUserFile /etc/proftpd/ftpd.passwd" >> $ftp_file
-    echo "AuthGroupFile /etc/proftpd/ftpd.group" >> $ftp_file
+    echo "AuthOrder mod_auth_pam.c mod_auth_unix.c" >> $ftp_file
+    #echo "AuthUserFile /etc/proftpd/ftpd.passwd" >> $ftp_file
+    #echo "AuthGroupFile /etc/proftpd/ftpd.group" >> $ftp_file
         
     service proftpd restart
     service xinetd restart
@@ -1909,7 +1909,6 @@ if [ $modsel -lt 8 ]; then
     echo "\$awidgetone = \"Members,group,members_all.php, ,3\";" >> $wwwpath/tekbase/config.php
     echo "\$awidgetwo = \"TekLab News,news,teklab_rss_all.php, ,2\";" >> $wwwpath/tekbase/config.php
     echo "\$awidgetthree = \"Admins,administrator,admins_all.php, ,1\";" >> $wwwpath/tekbase/config.php
-    echo "// FTP Login: tekbaseftp, FTP Passwort: $tekpwd" >> $wwwpath/tekbase/config.php
     echo "?>" >> $wwwpath/tekbase/config.php
     
     chmod 0777 $wwwpath/tekbase/cache

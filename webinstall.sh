@@ -861,20 +861,20 @@ if [ $modsel -lt 8 ]; then
     if [ ! -n "$yessel" ]; then
         yesno=""
         if [ "$langsel" = "1" ]; then
-            select_yesno "Es wird jetzt php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json,\nphp-mail, php-mcrypt, php-mbstring, php-mysql, php-ssh2, php-xml und php-zip\ninstalliert."
+            select_yesno "Es wird jetzt php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json,\nphp-mail, php-mbstring, php-mysql, php-ssh2, php-xml und php-zip\ninstalliert."
         else
-            select_yesno "Php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json, php-mail,\nphp-mcrypt, php-mbstring,php-mysql, php-ssh2, php-xml and php-zip is now\ninstalled."
+            select_yesno "Php, php-common, php-cli, php-curl, php-gd, php-geoip, php-json, php-mail,\nphp-mbstring, php-mysql, php-ssh2, php-xml and php-zip is now\ninstalled."
         fi
     fi
 
     if [ "$os_install" = "1" ]; then
         if [ "$os_version" -lt "42" ]; then
-            for i in apache2-mod-php5 php5 php5-common php5-cli php5-curl php5-devel php5-gd php5-geoip php5-json php5-mail php5-mcrypt php5-mbstring php5-mysql php5-ssh2 php5-xml php5-zip; do
+            for i in apache2-mod-php5 php5 php5-common php5-cli php5-curl php5-devel php5-gd php5-geoip php5-json php5-mail php5-mbstring php5-mysql php5-ssh2 php5-xml php5-zip; do
                 zypper $chkyes $i
 		gen_logs "-" "${i}"
             done
         else
-            for i in apache2-mod-php7 php7 php7-common php7-cli php7-curl php7-devel php7-gd php7-geoip php7-json php7-mail php7-mcrypt php7-mbstring php7-mysql php7-ssh2 php7-xml php7-zip; do
+            for i in apache2-mod-php7 php7 php7-common php7-cli php7-curl php7-devel php7-gd php7-geoip php7-json php7-mail php7-mbstring php7-mysql php7-ssh2 php7-xml php7-zip; do
                 zypper $chkyes $i
 		gen_logs "-" "${i}"
             done
@@ -882,12 +882,12 @@ if [ $modsel -lt 8 ]; then
     fi
     if [ "$os_install" = "2" ]; then
      	if [ "$os_version" -lt "16" -a "$os_name" = "Ubuntu" ] || [ "$os_version" -lt "9" -a "$os_name" = "Debian" ]; then
-      	    for i in libapache2-mod-php5 php5 php5-common php5-cli php5-curl php5-dev php5-gd php5-geoip php5-json php5-mail php5-mcrypt php5-mbstring php5-mysql php5-ssh2 php5-xml php5-zip; do
+      	    for i in libapache2-mod-php5 php5 php5-common php5-cli php5-curl php5-dev php5-gd php5-geoip php5-json php5-mail php5-mbstring php5-mysql php5-ssh2 php5-xml php5-zip; do
                 apt-get install $i $chkyes
 		gen_logs "-" "${i}"
             done
         else
-            for i in libapache2-mod-php php php-common php-cli php-curl php-dev php-gd php-geoip php-json php-mail php-mcrypt php-mbstring php-mysql php-ssh2 php-xml php-zip; do
+            for i in libapache2-mod-php php php-common php-cli php-curl php-dev php-gd php-geoip php-json php-mail php-mbstring php-mysql php-ssh2 php-xml php-zip; do
                 apt-get install $i $chkyes
 		gen_logs "-" "${i}"
             done
@@ -1806,7 +1806,7 @@ if [ $modsel -lt 8 ]; then
                 phpv=${phpd//.}
                 if [ "$phpv" = "56" ]; then
                     if [ -d /opt/plesk/php/${phpd}/bin ]; then
-                        for i in plesk-php${phpv}-dev plesk-php${phpv}-gd plesk-php${phpv}-mbstring plesk-php${phpv}-mcrypt plesk-php${phpv}-mysql plesk-php${phpv}-xml; do
+                        for i in plesk-php${phpv}-dev plesk-php${phpv}-gd plesk-php${phpv}-mbstring plesk-php${phpv}-mysql plesk-php${phpv}-xml; do
                             apt-get install $i $chkyes
                         done
                         /opt/plesk/php/${phpd}/bin/pecl install https://pecl.php.net/get/ssh2-0.13.tgz

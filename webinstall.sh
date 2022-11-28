@@ -750,7 +750,7 @@ case "$os_install" in
             chkyes="install"
             zypper update
         fi
-        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libopenssl-devel hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
+        for i in autoconf automake m4 make screen sudo curl wget sqlite sqlite3 expect gcc libssh2-1-devel libopenssl-devel libmp3lame-devel libxml2-devel libxslt-devel libshout-dev libvorbis-devel  hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip java-1_8_0-openjdk git; do
             zypper $chkyes $i
 	    gen_logs "-" "${i}"
         done
@@ -765,7 +765,7 @@ case "$os_install" in
             chkyes=""
             apt-get update && apt-get upgrade && apt-get dist-upgrade
         fi     
-        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssh2-1-dev libssl-dev hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip git; do
+        for i in autoconf automake build-essential m4 make debconf-utils screen sudo curl wget sqlite sqlite3 expect gcc libssh2-1-dev libssl-dev libmp3lame-dev libxml2-dev libshout-dev libvorbis-dev hddtemp dmidecode lm-sensors net-tools sysstat smartmontools patch pwgen unzip git; do
             apt-get install $i $chkyes
 	    gen_logs "-" "${i}"
         done

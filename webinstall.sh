@@ -722,7 +722,6 @@ if [ ! -n "$modsel" ]; then
     select_mode
 fi
 
-
 chk_netstat
 
 echo "" > /home/tekbase_status.txt
@@ -1077,6 +1076,11 @@ if [ $modsel -lt 8 ]; then
     else
         echo "Check ssh2: ok" >> /home/tekbase_status.txt    
     fi
+    
+    sed -i '/^HostKeyAlgorithms*/d' /etc/sshd/sshd_config
+    sed -i '/^PubkeyAcceptedKeyTypes*/d' /etc/sshd/sshd_config
+    echo "HostKeyAlgorithms ssh-rsa,ssh-dss" >> /etc/sshd/sshd_config
+    echo "PubkeyAcceptedKeyTypes ssh-rsa,ssh-dss" >> /etc/sshd/sshd_config
    
     if [ "$php_ioncube" = "" ]; then
         cd /usr/local
